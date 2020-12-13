@@ -7,11 +7,36 @@ output: pdf_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+setwd('~/unistra/statistiques/projet')
+alim <- read.csv("~/unistra/statistiques/projet/alim.csv", stringsAsFactors=TRUE)
+alim[,1] <- NULL
+
+library(corrplot)
+library(factoextra)
+library(FactoMineR)
+
 ```
 
 # ACP
 
 ``` {r}
+
+#summary(alim)
+#str(alim)
+
+```
+
+## Corrélation des variables:
+``` {r}
+corrplot(cor(alim[,-c(16,17,18)]))
+```
+
+
+``` {r}
+
+alim.pca <- PCA(alim, quali.sup = c(16,17,18), scale.unit=TRUE, ncp=5, graph = FALSE)
+
 
 
 
