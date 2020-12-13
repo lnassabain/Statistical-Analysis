@@ -15,6 +15,7 @@ alim[,1] <- NULL
 library(corrplot)
 library(factoextra)
 library(FactoMineR)
+library(cluster)
 
 ```
 
@@ -75,20 +76,68 @@ plot.PCA(alim.pca, axes=c(1, 2), choix="ind", habillage="none", col.ind="black",
 ```
 
 
-On peut dresser la topologie suivante:
+On peut dresser la topologie suivante:\
 
-À vue d'oeil on peut séparer trois groupes:
- 1 - Un groupe mangeant peu de légumes (à gauche) et une quantité de viande normale. Ces individus ont un taux de fer et de cholesterol élevé.
- 2 - Un groupe aurait une alimentation variée (Au centre, en haut à droite). Ces individus sont dans la moyennes par rapport aux variables qualitatives.
- 3 - Un groupe mangeant très peu de viande et beaucoup de légumes (en bas à droite). Ces indifidus on un taux de fer et de cholesterol bas.
+À vue d'oeil on peut séparer trois groupes:\
+ 1 - Un groupe mangeant peu de légumes (à gauche) et une quantité de viande normale. Ces individus ont un taux de fer et de cholesterol élevé.\
+ 2 - Un groupe aurait une alimentation variée (Au centre, en haut à droite). Ces individus sont dans la moyennes par rapport aux variables\ qualitatives.
+ 3 - Un groupe mangeant très peu de viande et beaucoup de légumes (en bas à droite). Ces indifidus on un taux de fer et de cholesterol bas.\
 
-Pour conclure mangez ni trop gras, ni trop salée, ni trop sucrée. Et l'abus d'alcool est dangereux pour la santé.
-
-
+Pour conclure ne mangez ni trop gras, ni trop salée, ni trop sucrée. Et l'abus d'alcool est dangereux pour la santé.
 
 
 
+# CAH
+
+```{r}
+alim.hcpc <- HCPC(alim.pca,
+                  nb.clust = 3,
+                  graph=FALSE)
+```
 
 
+## Le nombre de clusters choisi est-il pertinent? D’après quel critère ?
+
+```{r}
+plot(alim.hcpc, choice = "tree")
+
+```
+
+Le gain d’inertie le plus important a lieu pour k = 3. On garde 3 clusters.
+
+## Le premier plan factoriel suffit-il à résumer leurs différences ?
+
+Non pour la même raison.
+
+
+```{r}
+
+alim.hcpc$desc.var$quanti
+
+```
+
+## Quels sont les différents types de comportements alimentaires ?
+
+On observe 3 types de comportement alimentaire:\
+ 1 - Un premier à base de viande et de féculent (le fameux steak / coquillette). Apparemment ils aiment bien les sodas, l'hygiène de vie semble pas top.\
+ 2 - On a ici une alimentation qui paraît saine (d'après mes connaissances) avec comme seul viande, du poulet et du poisson et en accompagnement des légumes. (Apparemment ils compensent avec l'alcool, ce sont les seul à avoir un "test" positif :)\
+ 3 - Ici on a les végétariens.\
+
+
+## Qu’est-ce qui les caractérise ?
+1 - Le soda\
+2 - Le poisson\
+3 - Les légumes racines\
+
+-- À noter que les p-values sont très basse et qu'il y a donc peu de chance que l'on fasse un faux positif.\
+
+
+Ce qui pourrait être amusant est d'ajouter au jeu de donnée la longévité de chaque individu (à moins qu'ils soient encore en vie), et de regarder si il y a une corrélation.
+
+
+# Adisc
+
+## Quelles sont les variables permettant de discriminer les différents groupes ?
+## Quelles sont celles qui décrivent au mieux les groupes ?
 
 
