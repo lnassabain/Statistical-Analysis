@@ -20,24 +20,75 @@ library(FactoMineR)
 
 # ACP
 
+## Certains aliments sont-ils correlés ?
 ``` {r}
-
-#summary(alim)
-#str(alim)
-
+alim.cor <- cor(alim[,-c(16,17,18)])
+corrplot(alim.cor)
 ```
 
-## Corrélation des variables:
-``` {r}
-corrplot(cor(alim[,-c(16,17,18)]))
-```
+On constate une corrélation entre les variables poisson/fruits.de.mer, poulet/fruit.de.mer, legume.racine/legume.vert et entre le soda/porc.
+On constate cependant une corrélation négative entre les legumes.racine/porc, legume.vert/porc, féculents/poisson et le soda avec tous les légumes.
+
+
 
 
 ``` {r}
 
 alim.pca <- PCA(alim, quali.sup = c(16,17,18), scale.unit=TRUE, ncp=5, graph = FALSE)
 
+corrplot(alim.pca$var$cor)
 
+```
+
+On peut constater que ce sont majoritairement les végétaux qui ont contribuer à la formation du premier axe.
+Pour la création du deuxième axe, il s'agit plutôt des aliments animaux (poisson, fruit de mer, poulet).
+
+Pour résumer on pourra globalement quantifier la masse de l'alimentation végétarienne sur le premier axe et la masse de l'alimentation carnivore sur le deuxième axe.
+
+## Peut-on résumer des variables fortement correlées par des variables synthétiques ?
+
+Les variables peuvent être très corrélés à axe (variable synthétique) sans être bien représentés, donc non.
+Cependant si leur qualité de représentation est très bonne pour les variables dans ce cas oui.
+```{r}
+
+alim.pca$var$cos2
+fviz_pca_var(alim.pca, col.var = "cos2")
+```
+
+On constate que la qualité de représentation des aliments à base végétale sont un peu inférieur à 0.5. Cependant elles ont environ la même qualité de représentation sur le premier axe. Cela ne permet pas d'être sûr qu'elles sont totalement représentative de la réalité mais ça réduit l'erreur d'interprétation.
+De même pour le deuxième axe et l'alimentation carnivore.
+
+
+## Le nombre d’axes factoriels retenus est-il pertinent ?
+``` {r}
+fviz_eig(alim.pca, addlabels = TRUE, choice = "variance" )
+```
+On utilise le critère du coude et on retient donc 2 axes ici. Cela semble pertinent car on peut distinguer deux types d'alimentation différentes: Végétarienne et Carnivore.
+
+
+## Y a-t-il des ressemblances ou des oppositions entre les individus ?
+```{r}
+
+plot.PCA(alim.pca, axes=c(1, 2), choix="ind", habillage="none", col.ind="black", col.ind.sup="blue", col.quali="magenta", label=c("quali"), new.plot=TRUE)
 
 
 ```
+
+
+On peut dresser la topologie suivante:
+
+À vue d'oeil on peut séparer trois groupes:
+ 1 - Un groupe mangeant peu de légumes (à gauche) et une quantité de viande normale. Ces individus ont un taux de fer et de cholesterol élevé.
+ 2 - Un groupe aurait une alimentation variée (Au centre, en haut à droite). Ces individus sont dans la moyennes par rapport aux variables qualitatives.
+ 3 - Un groupe mangeant très peu de viande et beaucoup de légumes (en bas à droite). Ces indifidus on un taux de fer et de cholesterol bas.
+
+Pour conclure mangez ni trop gras, ni trop salée, ni trop sucrée. Et l'abus d'alcool est dangereux pour la santé.
+
+
+
+
+
+
+
+
+
