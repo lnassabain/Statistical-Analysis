@@ -16,7 +16,7 @@ library(corrplot)
 library(factoextra)
 library(FactoMineR)
 library(cluster)
-
+library(DiscriMiner)
 ```
 
 # ACP
@@ -138,6 +138,43 @@ Ce qui pourrait être amusant est d'ajouter au jeu de donnée la longévité de 
 # Adisc
 
 ## Quelles sont les variables permettant de discriminer les différents groupes ?
+
+```{r}
+alim.des.fer <- desDA(alim[,1:15], alim$taux.fer)
+as.data.frame(alim.des.fer$power)
+```
+
+Le porc et les différents légumes discriminent au mieux les groupes pour le taux de fer.
+
+```{r}
+alim.des.vit <- desDA(alim[,1:15], alim$taux.vitamines)
+as.data.frame(alim.des.vit$power)
+```
+
+Le poisson et les féculents discriminent au mieux les groupes pour le taux de vitamine.
+
+```{r}
+alim.des.chol <- desDA(alim[,1:15], alim$cholesterol)
+as.data.frame(alim.des.chol$power)
+
+```
+
+Les légumes verts discriminent au mieux les groupes pour le taux de cholesterol
+
+
 ## Quelles sont celles qui décrivent au mieux les groupes ?
 
+Pour le fer:
+```{r}
+rownames(alim.des.fer$discor)[abs(alim.des.fer$discor)==max(abs(alim.des.fer$discor))]
+```
+Pour les vitamines:
+```{r}
+rownames(alim.des.vit$discor)[abs(alim.des.vit$discor)==max(abs(alim.des.vit$discor))]
+```
+
+Pour le cholesterol:
+```{r}
+rownames(alim.des.chol$discor)[abs(alim.des.chol$discor)==max(abs(alim.des.chol$discor))]
+```
 
