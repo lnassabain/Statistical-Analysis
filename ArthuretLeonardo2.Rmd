@@ -1,0 +1,185 @@
+---
+title: "ArthuretLeonardo2"
+author: "Arthur et Leonardo"
+date: "12/21/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+setwd("C:/Users/Majstor Leo/Documents/Stats/projet/stats-m1-s1")
+lexique <- read.csv("lexique.csv", sep=',', encoding="UTF-8")
+rownames(lexique) <- lexique[1:31, 1]
+lexique<- lexique[1:31, 2:13]
+
+library(FactoMineR)
+library(factoextra)
+library(corrplot)
+```
+
+# Exercice 2
+## Detailler le contenu du discours de Hameau et de Lachambre
+```{r}
+par(mar=c(7,4.5,4,1))
+barplot( lexique[1:31,"Hameau"],
+         names.arg = rownames(lexique)[1:31],
+         col = "blue",
+         border = "white",
+         main = "Contenu du discours de Hameau",
+         ylab = "Nombre d'occurences",
+         las = 2,
+         cex.lab = 1.2)
+```
+
+
+
+Nous pouvons remarquer que les termes qui apparaissent le plus souvent sont: *suffrage*, *pouvoir d'achat*, *égalité*, *dialogue*, *candidature* et *écologie*. Tandis que les termes apparaissant très peu de fois sont: *sécurité*, *terrorisme*, *devoir*, *emploi*, *finance*, *retraité*, *intervention* et *principe*.
+Le terme qui apparaît le plus de fois est *suffrage* et celui qui apparaît le moins de fois est *sécurité*.
+
+
+
+
+```{r}
+par(mar=c(7,4.5,4,1))
+barplot(lexique[1:31,"Lachambre"],
+        names.arg = rownames(lexique)[1:31],
+        col = "red",
+        border="white",
+        main="Contenu du discours de Lachambre",
+        ylab="Nombre d'occurences",
+        las=2,
+        cex.lab=1.2)
+```
+
+
+
+Dans le discours de Lachambre, les termes qui apparaîssent le peu de fois sont: *pouvoir d'achat*, *dialogue*, *rassemblement*, *suffrage*, *terrorisme*, *devoir*, *finance*, *commerçant*, *retraité* et *fiscalité*. Les termes *pouvoir d'achat* et *dialogue* n'appairaissant pas du tout dans son discours.
+Les termes qui apparaissent le plus de fois sont: *dette*, *transparence*, *écoute*, *préoccupation*, *principe* et *efficacité*. Les termes *écoute* et *préoccupation* étant ceux qui apparaissent plus de fois que tout les autres (15 fois).
+
+
+
+## Détailler les apparition des termes *transparence* et *emploi*
+```{r}
+par(mar=c(4.5,5.5,4,1))
+barplot(as.matrix(lexique["transparence",1:12]),
+        names.arg=colnames(lexique)[1:12],
+        col="blue",
+        border="white",
+        main="Apparition du terme 'transparence'",
+        horiz = T,
+        xlab="Nombre d'occurences",
+        las=1,
+        cex.lab=1.2)
+```
+
+
+
+Les personnages politiques utilisant le plus le terme *transparence* sont Micron, Méheu, Lachambre, Cheminette et Jolille. Les autres politiciens utilisent peu ce terme, notamment La Peine et Karcher qui n'ont pas utilisé ce terme une seule fois.
+
+
+
+```{r}
+par(mar=c(4.5,5.5,4,1))
+barplot(as.matrix(lexique["emploi",1:12]),
+        names.arg=colnames(lexique)[1:12],
+        col="red",
+        border="white",
+        main="Apparition du terme 'emploi'",
+        horiz=T,
+        xlab="Nombre d'occurences",
+        las=1,
+        cex.lab=1.2)
+```
+Les remarques importantes que nous pouvons déduire de ce graphe sont que Artichaud n'a jamais utilisé le terme 'emploi' dans ses discours. Alors que La Peine, Dupond et Karcher utilisent relativement souvent ce terme (Karcher en 7 occurences, Dupond en 14 et La Peine en 9).Les autres politiciens n'ont pas un nombre remarquable d'occurences du terme 'emploi'.
+
+## Déterminer les attirances et répulsions entre les modalités
+
+D'après le cours, le test du khi2 n'est valable que si chaque effectif théorique est supérieur à 5 et si l'effectif total est supérieur à 30. Regardons donc le tableau representant le nombre d'occurences théorique de chaque terme pour chaque personnage politique. 
+*Remarque*: \newline
+Nous afficherons uniquement une partie du tableau pour ne dégrader la lisibilité du document.
+
+```{r}
+lex.chi2<-chisq.test(lexique)
+lex.chi2$expected[1:5,]
+```
+
+Nous voyons que les effectifs ne sont pas assez importants, donc nous ne pourrons pas utiliser ce test pour étudier les attirances et répulsions entre les modalités.
+
+Comment procédér? \newline
+Nous savons que :\newline
+        **n(ij)** est l'effectif observé pour un terme i et pour le politicien j \newline
+        **t(ij)** est l'effectif théorique pour un terme i et pour un politicien j \newline
+        **n** est l'effectif total observé \newline
+        **n(i.)** est la somme du nombre d'occurences d'un terme i \newline
+        **n(.j)** est la somme du nombre d'occurences des termes pour un politicien j \newline
+        
+D'après le cours $n(ij) > t(ij) <=> n(ij)/n(i.) > n(.j)/n$  et $n(ij) < t(ij) <=> n(ij)/n(i.) < n(.j)/n$.
+Donc nous allons créer une matrice où l'élément se trouvant à la ligne i et à la colonne j prendra la valeur n(ij)/n(i.)  -  n(.j)/n .De cette manière s'il s'agit d'une valeur négative nous pourrons conclure qu'il y a répulsion entre i et j, et s'il s'agit d'une valeur positive, il y a attirance.
+*Remarque*: \newline
+Nous allons multiplier les valeurs par 100 pour améliorer la lisibilité. \newline
+Seule une partie de la matrice est affichée pour éviter de dégrader la lisibilité du document.
+
+```{r}
+M = matrix(nrow = 31, ncol=12)
+for (i in 1:31){
+        for (j in 1:12){
+              M[i,j]<-100*((lexique[i,j]/sum(lexique[i,]))- (sum(lexique[,j])/sum(lexique)))
+        }
+}
+
+colnames(M)<-colnames(lexique)
+rownames(M)<-rownames(lexique)
+M[1:5,]
+```
+
+Nous pourrions considérer uniquement les valeurs supérieures à 10 et inférieures à -10, pour mettre en évidence les valeurs saillantes. Par exemple: Il y a forte attirance entre le politicien Tréronchon et le terme 'pouvoir d'achat', et une forte répulsion entre Cheminette et le terme 'candidature'.
+
+Un autre moyen serait d'effectuer une Analyse Factorielle des Correspondances, choisir un nombre optimal de dimensions, puis d'étudier la distance entre les politiciens et les termes dans l'espace défini par ces dimensions.
+
+```{r}
+lex.afc<-CA(lexique, graph=FALSE)
+fviz_eig(lex.afc, addlabels=TRUE)
+```
+Le choix des dimensions à garder se fera grâce au critère de Kaiser qui propose de garder les axes ayant une inertie supérieure à l'inertie moyenne.
+Calculons l'inertie moyenne:
+```{r}
+lex.afc$eig
+sum(lex.afc$eig[,"eigenvalue"])/nrow(lex.afc$eig)
+```
+
+Nous garderons uniquement les axes 1 et 2 car leur inertie et supérieure à l'inértie moyenne.
+
+```{r}
+plot.CA(lex.afc, axes=c(1,2),col.row="blue",col.col="red" , repel=TRUE)
+```
+
+Pour interpreter ce graphique et pour trouver les attirances/répulsions entre les modalités, il suffit de regarder la distance entre les différentes modalités, c-à-d il faut regarder où se situent les politiciens par rapport aux différents termes.
+Prenons par exemple le terme *candidature*. Sur le graphique, il se trouve près de Tréronchon, Artichaud et Hameau donc nous pouvons conclure qu'il y a attirance entre ces politiciens et ce terme (En moyenne, ils l'utiliseront plus que les autres personnages politiques). Puis nous voyons aussi que le terme *candidature* est situé loin de Cheminette, Méheu, Dupond, Jolille et La Peine, donc il y a répulsion entre ces politiciens et ce terme.
+
+
+
+## Examiner la projection du terme *écologie* et les relations qu'il entretient avec les autres modalités
+
+D'après le graphique de la question précédente nous pouvons voir que le terme écologie se trouve entre deux groupes de politicens. Le premier contenant Jolille, Cheminette, Méheu, Lachmbre et Micron, le deuxième contenant Hameau, Bisoux, Tréronchon et Artichaud. Le terme se trouve plus près du premier groupe mais pas non plus à une distance permettant de juger avec clarté les attirances et les répulsions.
+Pour mettre en évidence les relations nous pouvons soit étudier la matrice M de la question précédente, soit faire un graphique mettant au clair la difference entre l'effectif observé et l'effectif théorique pour le terme *écologie*.
+
+```{r}
+par(mar=c(6,4.5,4,1))
+mx1<-as.matrix(lexique["écologie",])
+mx2<-as.matrix(t(lex.chi2$expected["écologie",]))
+mx<-rbind(mx1,mx2)
+colours= c('red','blue')
+barplot(mx, main="Ecologie", ylab="Nbr d'occurences", las=2,cex.axis = 1,beside=TRUE,col=colours)
+legend('topright', fill=colours, legend=c('Valeur observée', 'Valeur théorique'))
+```
+
+Nous pouvons voir qu'il y a une forte attirance entre Jolille et *écologie*, une attirance moyenne avec Bisoux et Hameau, puis une répulsion avec tous les autres politiciens. Cela explique pourquoi sur le graphique de la question précédente, la projection du terme se trouvait entre deux groupes.
+
+
+Nous allons de même tracer la matrice de corrélation entre les différents termes pour voir s'il y a des informations intéressantes:
+```{r}
+corrplot(cor(t(lexique)))
+```
+
+D'après cette matrice, il existe une légère corrélation entre les termes *écologie* et *habitant* et entre *écologie* et *engagement* et une correlation inverse entre *écologie* et *finance*. Cependant ces relations restent négligeables.
