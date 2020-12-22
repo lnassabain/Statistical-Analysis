@@ -1,5 +1,5 @@
 ---
-title: "ArthuretLeonardo2"
+title: "Lexique"
 author: "Arthur et Leonardo"
 date: "12/21/2020"
 output: pdf_document
@@ -54,12 +54,14 @@ barplot(lexique[1:31,"Lachambre"],
 
 
 
-Dans le discours de Lachambre, les termes qui apparaîssent le peu de fois sont: *pouvoir d'achat*, *dialogue*, *rassemblement*, *suffrage*, *terrorisme*, *devoir*, *finance*, *commerçant*, *retraité* et *fiscalité*. Les termes *pouvoir d'achat* et *dialogue* n'appairaissant pas du tout dans son discours.
+Dans le discours de Lachambre, les termes qui apparaîssent peu de fois sont: *pouvoir d'achat*, *dialogue*, *rassemblement*, *suffrage*, *terrorisme*, *devoir*, *finance*, *commerçant*, *retraité* et *fiscalité*. Les termes *pouvoir d'achat* et *dialogue* n'appairaissant pas du tout dans son discours.
 Les termes qui apparaissent le plus de fois sont: *dette*, *transparence*, *écoute*, *préoccupation*, *principe* et *efficacité*. Les termes *écoute* et *préoccupation* étant ceux qui apparaissent plus de fois que tout les autres (15 fois).
 
 
 
-## Détailler les apparition des termes *transparence* et *emploi*
+
+
+## Détailler les apparitions des termes *transparence* et *emploi*
 ```{r}
 par(mar=c(4.5,5.5,4,1))
 barplot(as.matrix(lexique["transparence",1:12]),
@@ -91,12 +93,12 @@ barplot(as.matrix(lexique["emploi",1:12]),
         las=1,
         cex.lab=1.2)
 ```
-Les remarques importantes que nous pouvons déduire de ce graphe sont que Artichaud n'a jamais utilisé le terme 'emploi' dans ses discours. Alors que La Peine, Dupond et Karcher utilisent relativement souvent ce terme (Karcher en 7 occurences, Dupond en 14 et La Peine en 9).Les autres politiciens n'ont pas un nombre remarquable d'occurences du terme 'emploi'.
+Les remarques importantes que nous pouvons déduire de ce graphe sont que Artichaud n'a jamais utilisé le terme 'emploi' dans ses discours. Alors que La Peine, Dupond et Karcher utilisent relativement souvent ce terme (Karcher en 7 occurences, Dupond en 14 et La Peine en 9).Les autres politiciens n'ont pas un nombre remarquable d'occurences du terme *emploi*.
 
 ## Déterminer les attirances et répulsions entre les modalités
 
-D'après le cours, le test du khi2 n'est valable que si chaque effectif théorique est supérieur à 5 et si l'effectif total est supérieur à 30. Regardons donc le tableau representant le nombre d'occurences théorique de chaque terme pour chaque personnage politique. 
-*Remarque*: \newline
+D'après le cours, le test du khi2 n'est valable que si chaque effectif théorique est supérieur à 5 et si l'effectif total est supérieur à 30. Regardons donc le tableau representant le nombre d'occurences théorique de chaque terme pour chaque personnage politique.\newline 
+***Remarque***: \newline
 Nous afficherons uniquement une partie du tableau pour ne dégrader la lisibilité du document.
 
 ```{r}
@@ -115,10 +117,10 @@ Nous savons que :\newline
         **n(.j)** est la somme du nombre d'occurences des termes pour un politicien j \newline
         
 D'après le cours $n(ij) > t(ij) <=> n(ij)/n(i.) > n(.j)/n$  et $n(ij) < t(ij) <=> n(ij)/n(i.) < n(.j)/n$.
-Donc nous allons créer une matrice où l'élément se trouvant à la ligne i et à la colonne j prendra la valeur n(ij)/n(i.)  -  n(.j)/n .De cette manière s'il s'agit d'une valeur négative nous pourrons conclure qu'il y a répulsion entre i et j, et s'il s'agit d'une valeur positive, il y a attirance.
-*Remarque*: \newline
+Donc nous allons créer une matrice où l'élément se trouvant à la ligne i et à la colonne j prendra la valeur $n(ij)/n(i.)  -  n(.j)/n$ .De cette manière s'il s'agit d'une valeur négative nous pourrons conclure qu'il y a répulsion entre i et j, et s'il s'agit d'une valeur positive, il y a attirance.\newline
+***Remarque***: \newline
 Nous allons multiplier les valeurs par 100 pour améliorer la lisibilité. \newline
-Seule une partie de la matrice est affichée pour éviter de dégrader la lisibilité du document.
+Seule une partie de la matrice est affichée pour ne pas dégrader la lisibilité du document.
 
 ```{r}
 M = matrix(nrow = 31, ncol=12)
@@ -133,7 +135,7 @@ rownames(M)<-rownames(lexique)
 M[1:5,]
 ```
 
-Nous pourrions considérer uniquement les valeurs supérieures à 10 et inférieures à -10, pour mettre en évidence les valeurs saillantes. Par exemple: Il y a forte attirance entre le politicien Tréronchon et le terme 'pouvoir d'achat', et une forte répulsion entre Cheminette et le terme 'candidature'.
+Nous pourrions considérer uniquement les valeurs supérieures à 10 et inférieures à -10, pour mettre en évidence les valeurs saillantes. Par exemple: Il y a forte attirance entre le politicien Tréronchon et le terme *pouvoir d'achat*, et une forte répulsion entre Cheminette et le terme *candidature*.
 
 Un autre moyen serait d'effectuer une Analyse Factorielle des Correspondances, choisir un nombre optimal de dimensions, puis d'étudier la distance entre les politiciens et les termes dans l'espace défini par ces dimensions.
 
@@ -145,7 +147,8 @@ Le choix des dimensions à garder se fera grâce au critère de Kaiser qui propo
 Calculons l'inertie moyenne:
 ```{r}
 lex.afc$eig
-sum(lex.afc$eig[,"eigenvalue"])/nrow(lex.afc$eig)
+inertie.moyenne<-sum(lex.afc$eig[,"eigenvalue"])/nrow(lex.afc$eig)
+inertie.moyenne
 ```
 
 Nous garderons uniquement les axes 1 et 2 car leur inertie et supérieure à l'inértie moyenne.
